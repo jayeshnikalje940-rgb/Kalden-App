@@ -16,7 +16,7 @@ st.write(f"**{ 'Good Morning!' if 5 <= datetime.datetime.now().hour < 12 else 'G
 try:
     genai.configure(api_key=st.secrets["API_KEY"])
     # Hum 2.0-flash use kar rahe hain kyunki ye stable hai
-    model = genai.GenerativeModel('gemini-2.0-flash') 
+    model = genai.GenerativeModel('gemini-3.5-flash') 
 except Exception as e:
     st.error("System configuration error. Please contact the administrator.")
     st.stop()
