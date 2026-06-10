@@ -2,43 +2,61 @@ import streamlit as st
 import datetime
 import google.generativeai as genai
 
-st.set_page_config(page_title="Kalden AI", page_icon="📚")
+# Page Config
+st.set_page_config(page_title="Kalden AI", page_icon="🎓")
 
-# Professional Sidebar
-st.sidebar.title("📚 Kalden Subjects")
+# App Title
+st.title("🎓 Kalden Study Assistant")
+st.write(f"**Jayesh Sir** - Your personal 9th SSC tutor.")
+
+# Sidebar - Settings
+st.sidebar.title("📚 Selection")
 subject = st.sidebar.selectbox("Choose Subject", ["History", "Geography", "Science", "Maths", "English"])
-chapter = st.sidebar.text_input("Enter Chapter/Lesson Name")
+chapter = st.sidebar.text_input("Enter Chapter Name")
 
-st.title("Kalden AI 🎓")
-st.write(f"**{ 'Good Morning!' if 5 <= datetime.datetime.now().hour < 12 else 'Good Afternoon!' if 12 <= datetime.datetime.now().hour < 17 else 'Hello!' }** - I am Jayesh Sir, your personal 9th SSC tutor.")
+# Sidebar - Quick Tools
+st.sidebar.subheader("Quick Study Tools")
+if st.sidebar.button("📝 Important Questions"):
+    st.session_state.prompt = f"Subject: {subject}, Chapter: {chapter}. Is chapter ke 5 important questions do jo exams mein aate hain."
 
-# API Configuration via Secrets (No input box needed!)
+if st.sidebar.button("🧠 Chapter Summary"):
+    st.session_state.prompt = f"Subject: {subject}, Chapter: {chapter}. Is chapter ki aasaan summary samjhao."
+
+if st.sidebar.button("💡 Hard Concepts"):
+    st.session_state.prompt = f"Subject: {subject}, Chapter: {chapter}. Is chapter ke hard concepts ko examples ke saath samjhao."
+
+# API Configuration
 try:
     genai.configure(api_key=st.secrets["API_KEY"])
-    # Hum 2.0-flash use kar rahe hain kyunki ye stable hai
-    model = genai.GenerativeModel('gemini-3.5-flash') 
+    model = genai.GenerativeModel('gemini-3.5-flash')
 except Exception as e:
-    st.error("System configuration error. Please contact the administrator.")
-    st.stop()
+    st.error("Configuration error!")
 
+# Chat Logic
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+# Agar button click hua, toh prompt set karo
+if "prompt" in st.session_state:
+    user_input = st.session_state.prompt
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    del st.session_state.prompt # Reset
+else:
+    user_input = st.chat_input("Ask Jayesh Sir...")
 
-if prompt := st.chat_input("Ask Jayesh Sir..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+if user_input:
+    st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(user_input)
 
-    persona = f"You are 'Kalden', acting as Jayesh Sir. Student: 9th SSC Maharashtra Board. Subject: {subject}, Chapter: {chapter}. Always prefix answer with 'Jayesh Sir:- '."
-    
     with st.chat_message("assistant"):
-        try:
-            response = model.generate_content(f"{persona}\nQuery: {prompt}").text
-            st.markdown(response)
-            st.session_state.messages.append({"role": "assistant", "content": response})
-        except Exception as e:
-            st.error("Error generating response. Please check API quota.")
+        persona = "You are Kalden, acting as Jayesh Sir, 9th SSC tutor. Prefix answer with 'Jayesh Sir:- '."
+        response = model.generate_content(f"{persona}\nQuery: {user_input}").text
+        st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+
+# Show old messages
+for msg in st.session_state.messages:
+    if msg["role"] != "user" or "Is chapter" not in msg["content"]: # Filter button prompts
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
