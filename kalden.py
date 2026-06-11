@@ -2,20 +2,32 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 
+# 1. Page Config
 st.set_page_config(page_title="SSC Genius AI", page_icon="🎓", layout="centered")
 
+# 2. Hide Streamlit Branding (Watermark)
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
+# 3. Layout & Setup
 st.title("🎓 Jayesh Tutorial")
 st.sidebar.header("Kalden")
 subject = st.sidebar.selectbox("Subject", ["History", "Geography", "Science", "Maths", "English"])
 
 # API Setup
 genai.configure(api_key=st.secrets["API_KEY"])
-model = genai.GenerativeModel('gemini-3.5-flash')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 # Persona
 persona = "You are Jayesh Sir, a 9th SSC tutor. Be encouraging, clear, and always start your response with 'Jayesh Sir:- '."
 
-# --- Sidebar Test Generator ---
+# --- Sidebar: Test Paper Generator ---
 st.sidebar.markdown("---")
 st.sidebar.subheader("Create Test Paper")
 chapter_test = st.sidebar.text_input("Enter Chapter for Test")
@@ -28,17 +40,18 @@ if st.sidebar.button("Generate Test Paper"):
             test_prompt = f"{persona}\nGenerate a NEW and UNIQUE test paper for {subject}, Chapter: {chapter_test}. Total Marks: {marks_test}. Question Type: {q_type}. Do not repeat questions."
             response = model.generate_content(test_prompt)
             st.session_state.messages.append({"role": "assistant", "content": f"Jayesh Sir:- Here is your test paper:\n\n{response.text}"})
+            st.rerun() 
     else:
         st.sidebar.warning("Please enter a chapter name!")
 
 # --- Chat Section ---
 st.subheader("Chat with Jayesh Sir")
-# Camera / Upload integrated here
 uploaded_file = st.file_uploader("📸 Scan/Upload Question", type=["jpg", "jpeg", "png"])
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Display history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
