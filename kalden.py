@@ -1,3 +1,8 @@
+st.set_page_config(
+    page_title="Jayesh Tutorial", 
+    page_icon="🎓", 
+    layout="centered"
+)
 import streamlit as st
 import google.generativeai as genai
 from PIL import Image
