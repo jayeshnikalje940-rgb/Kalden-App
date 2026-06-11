@@ -2,6 +2,8 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 import random
+import json
+import os
 from datetime import datetime
 
 # ══════════════════════════════════════════════════════════════
@@ -15,7 +17,7 @@ st.set_page_config(
 )
 
 # ══════════════════════════════════════════════════════════════
-# 2. PREMIUM DARK GLASSMORPHISM CSS
+# 2. PREMIUM DARK CSS — TEXT VISIBILITY FIXED
 # ══════════════════════════════════════════════════════════════
 custom_css = """
 <style>
@@ -27,25 +29,31 @@ header {visibility: hidden;}
 
 /* ── Root Variables ── */
 :root {
-    --primary: #6C63FF;
-    --primary-glow: rgba(108,99,255,0.35);
+    --primary: #7C73FF;
+    --primary-glow: rgba(124,115,255,0.35);
     --secondary: #FF6584;
     --accent: #00D68F;
-    --bg-dark: #0B0B1A;
-    --glass: rgba(255,255,255,0.06);
-    --glass-hover: rgba(255,255,255,0.10);
-    --glass-border: rgba(255,255,255,0.12);
-    --text-primary: #EAEAEA;
-    --text-secondary: #8888A8;
-    --grad-1: linear-gradient(135deg, #6C63FF 0%, #FF6584 100%);
-    --grad-2: linear-gradient(135deg, #00D68F 0%, #0EA5E9 100%);
-    --grad-3: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+    --bg-dark: #0F0F1E;
+    --glass: rgba(255,255,255,0.07);
+    --glass-hover: rgba(255,255,255,0.12);
+    --glass-border: rgba(255,255,255,0.15);
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0B0CC;
+    --text-dim: #7878A0;
 }
 
-/* ── Global ── */
+/* ── Global Text Override — MOST IMPORTANT ── */
+.stApp, .stApp * {
+    color: var(--text-primary) !important;
+}
+
+/* Specific overrides for elements that need dimmer text */
+.stApp .stCaption, .stApp .stCaption * {
+    color: var(--text-secondary) !important;
+}
+
 .stApp {
     background: var(--bg-dark);
-    color: var(--text-primary);
 }
 
 /* Animated mesh background */
@@ -54,9 +62,9 @@ header {visibility: hidden;}
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(ellipse 600px 600px at 15% 80%, rgba(108,99,255,0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 500px 500px at 85% 15%, rgba(255,101,132,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 400px at 50% 50%, rgba(0,214,143,0.06) 0%, transparent 70%);
+        radial-gradient(ellipse 600px 600px at 15% 80%, rgba(124,115,255,0.13) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 500px at 85% 15%, rgba(255,101,132,0.09) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 400px at 50% 50%, rgba(0,214,143,0.07) 0%, transparent 70%);
     z-index: -1;
     animation: bgPulse 12s ease-in-out infinite alternate;
 }
@@ -74,7 +82,7 @@ header {visibility: hidden;}
 .main-title {
     font-size: 2.8rem !important;
     font-weight: 900 !important;
-    background: var(--grad-1) !important;
+    background: linear-gradient(135deg, #7C73FF 0%, #FF6584 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
@@ -84,7 +92,7 @@ header {visibility: hidden;}
 }
 .subtitle {
     text-align: center;
-    color: var(--text-secondary);
+    color: var(--text-secondary) !important;
     font-size: .95rem;
     margin-bottom: 1.2rem;
     animation: fadeDown .7s ease-out .15s both;
@@ -102,15 +110,15 @@ header {visibility: hidden;}
     animation: fadeUp .5s ease-out;
 }
 .glass-card:hover {
-    border-color: rgba(108,99,255,0.35);
-    box-shadow: 0 0 30px rgba(108,99,255,0.06);
+    border-color: rgba(124,115,255,0.35);
+    box-shadow: 0 0 30px rgba(124,115,255,0.06);
 }
 
 /* ── Section Header ── */
 .sec-head {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--primary) !important;
     margin-bottom: .75rem;
     display: flex;
     align-items: center;
@@ -128,27 +136,27 @@ header {visibility: hidden;}
 }
 .stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 24px rgba(108,99,255,0.12);
+    box-shadow: 0 6px 24px rgba(124,115,255,0.12);
 }
 .stat-num {
     font-size: 1.7rem;
     font-weight: 800;
-    background: var(--grad-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    background: linear-gradient(135deg, #7C73FF, #FF6584) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
 }
 .stat-lbl {
     font-size: .65rem;
-    color: var(--text-secondary);
+    color: var(--text-dim) !important;
     text-transform: uppercase;
     letter-spacing: 1.2px;
 }
 
 /* ── Buttons ── */
 .stButton>button {
-    background: var(--grad-1) !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, #7C73FF, #FF6584) !important;
+    color: #FFFFFF !important;
     border: none !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
@@ -160,23 +168,11 @@ header {visibility: hidden;}
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 18px var(--primary-glow) !important;
 }
-.outline-btn>button {
-    background: var(--glass) !important;
-    border: 1px solid var(--glass-border) !important;
-    color: var(--text-primary) !important;
-}
-.outline-btn>button:hover {
-    background: var(--glass-hover) !important;
-    border-color: var(--secondary) !important;
-}
-.danger-btn>button {
-    background: linear-gradient(135deg,#EF4444,#DC2626) !important;
-}
-.success-btn>button {
-    background: var(--grad-2) !important;
+.stButton>button p, .stButton>button span {
+    color: #FFFFFF !important;
 }
 
-/* ── Chat ── */
+/* ── Chat Messages ── */
 .stChatMessage {
     background: var(--glass) !important;
     border: 1px solid var(--glass-border) !important;
@@ -184,33 +180,77 @@ header {visibility: hidden;}
     padding: .9rem !important;
     margin-bottom: .4rem !important;
 }
-[data-testid="stChatMessageAvatar-Assistant"] {
-    background: var(--grad-1) !important;
+.stChatMessage p, .stChatMessage span, .stChatMessage div,
+.stChatMessage li, .stChatMessage strong, .stChatMessage em {
+    color: #FFFFFF !important;
 }
-[data-testid="stChatMessageAvatar-User"] {
-    background: var(--grad-2) !important;
+.stChatMessage code {
+    color: #FFD93D !important;
+    background: rgba(255,255,255,0.08) !important;
 }
-.stChatInput {
-    border-radius: 14px !important;
+.stChatMessage pre {
+    background: rgba(0,0,0,0.3) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 10px !important;
 }
-.stChatInput textarea {
-    color: var(--text-primary) !important;
-    background: rgba(255,255,255,0.04) !important;
+.stChatMessage pre code {
+    color: #E0E0FF !important;
 }
 
-/* ── Inputs ── */
+[data-testid="stChatMessageAvatar-Assistant"] {
+    background: linear-gradient(135deg, #7C73FF, #FF6584) !important;
+}
+[data-testid="stChatMessageAvatar-User"] {
+    background: linear-gradient(135deg, #00D68F, #0EA5E9) !important;
+}
+
+/* ── Chat Input ── */
+.stChatInput {
+    border-radius: 14px !important;
+    border: 1px solid var(--glass-border) !important;
+    background: rgba(255,255,255,0.06) !important;
+}
+.stChatInput textarea {
+    color: #FFFFFF !important;
+    background: rgba(255,255,255,0.04) !important;
+    caret-color: #7C73FF !important;
+}
+.stChatInput textarea::placeholder {
+    color: var(--text-dim) !important;
+}
+.stChatInput label, .stChatInput div[data-testid="stChatInputLabel"] {
+    color: var(--text-secondary) !important;
+}
+
+/* ── Text / Number Inputs ── */
 .stTextInput>div>div>input,
 .stNumberInput>div>div>input {
-    background: var(--glass) !important;
+    background: rgba(255,255,255,0.06) !important;
     border-color: var(--glass-border) !important;
-    color: var(--text-primary) !important;
+    color: #FFFFFF !important;
     border-radius: 10px !important;
+    caret-color: #7C73FF !important;
+}
+.stTextInput>div>div>input::placeholder,
+.stNumberInput>div>div>input::placeholder {
+    color: var(--text-dim) !important;
+}
+.stTextInput label, .stNumberInput label {
+    color: #FFFFFF !important;
+}
+
+/* ── Selectbox ── */
+.stSelectbox label {
+    color: #FFFFFF !important;
 }
 .stSelectbox>div>div {
-    background: var(--glass) !important;
+    background: rgba(255,255,255,0.06) !important;
     border-color: var(--glass-border) !important;
-    color: var(--text-primary) !important;
+    color: #FFFFFF !important;
     border-radius: 10px !important;
+}
+.stSelectbox>div>div>div {
+    color: #FFFFFF !important;
 }
 
 /* ── Tabs ── */
@@ -223,13 +263,16 @@ header {visibility: hidden;}
 }
 .stTabs [data-baseweb="tab"] {
     border-radius: 8px !important;
-    color: var(--text-secondary) !important;
+    color: var(--text-dim) !important;
     font-weight: 600 !important;
     font-size: .9rem !important;
 }
 .stTabs [aria-selected="true"] {
     background: var(--primary) !important;
-    color: #fff !important;
+    color: #FFFFFF !important;
+}
+.stTabs [aria-selected="true"] p {
+    color: #FFFFFF !important;
 }
 
 /* ── Radio ── */
@@ -239,10 +282,13 @@ header {visibility: hidden;}
     border-radius: 10px;
     padding: .5rem;
 }
+.stRadio label p {
+    color: #FFFFFF !important;
+}
 
 /* ── Checkbox ── */
-.stCheckbox {
-    color: var(--text-primary) !important;
+.stCheckbox label p {
+    color: #FFFFFF !important;
 }
 
 /* ── File Uploader ── */
@@ -252,25 +298,72 @@ section[data-testid="stFileUploader"] {
     background: var(--glass) !important;
     padding: .8rem !important;
 }
+section[data-testid="stFileUploader"] label,
+section[data-testid="stFileUploader"] span,
+section[data-testid="stFileUploader"] small {
+    color: #FFFFFF !important;
+}
 
 /* ── Select Slider ── */
-.stSelectSlider {
-    color: var(--text-primary) !important;
+.stSelectSlider label p {
+    color: #FFFFFF !important;
+}
+.stSelectSlider div[data-baseweb="slider"] {
+    color: #FFFFFF !important;
 }
 
 /* ── Progress ── */
 .stProgress>div>div>div {
-    background: var(--grad-1) !important;
+    background: linear-gradient(135deg, #7C73FF, #FF6584) !important;
+}
+.stProgress div[role="progressbar"] p,
+.stProgress p {
+    color: #FFFFFF !important;
 }
 
 /* ── Success / Warning / Info / Error ── */
-.stSuccess, .stWarning, .stError, .stInfo {
-    border-radius: 12px !important;
-    backdrop-filter: blur(10px) !important;
+.stSuccess { border-radius: 12px !important; }
+.stSuccess p, .stSuccess div { color: #1B7A3D !important; }
+.stWarning { border-radius: 12px !important; }
+.stWarning p, .stWarning div { color: #8B6914 !important; }
+.stError   { border-radius: 12px !important; }
+.stError p, .stError div { color: #C53030 !important; }
+.stInfo    { border-radius: 12px !important; }
+.stInfo p, .stInfo div { color: #2B6CB0 !important; }
+
+/* ── Markdown rendered text ── */
+.stMarkdown p, .stMarkdown li, .stMarkdown span,
+.stMarkdown strong, .stMarkdown em, .stMarkdown h1,
+.stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+    color: #FFFFFF !important;
+}
+.stMarkdown code {
+    color: #FFD93D !important;
+    background: rgba(255,255,255,0.08) !important;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.stMarkdown pre {
+    background: rgba(0,0,0,0.3) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 10px !important;
 }
 
 /* ── Divider ── */
 hr { border-color: var(--glass-border) !important; }
+
+/* ── Download Button ── */
+.stDownloadButton>button {
+    background: linear-gradient(135deg, #00D68F, #0EA5E9) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+}
+.stDownloadButton>button p,
+.stDownloadButton>button span {
+    color: #FFFFFF !important;
+}
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
@@ -287,6 +380,11 @@ hr { border-color: var(--glass-border) !important; }
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Spinner text ── */
+.stSpinner p {
+    color: #FFFFFF !important;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
     .main-title { font-size: 1.7rem !important; }
@@ -299,18 +397,18 @@ hr { border-color: var(--glass-border) !important; }
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════
-# 3. API SETUP
+# 3. API SETUP — ONLY gemini-3.5-flash
 # ══════════════════════════════════════════════════════════════
 genai.configure(api_key=st.secrets["API_KEY"])
 
 MODEL_MAP = {
-    "⚡ Flash (Fast)": "gemini-2.0-flash",
-    "🧠 Pro  (Smart)": "gemini-3.5-flash",
+    "⚡ Flash (Fast)": "gemini-3.5-flash",
+    "🧠 Pro  (Smart)": "gemini-1.5-pro",
     "🚀 Flash Lite":   "gemini-2.0-flash-lite",
 }
 
 # ══════════════════════════════════════════════════════════════
-# 4. SUBJECT DATA  (SSC 9th — Maharashtra Board)
+# 4. SUBJECT DATA (SSC 9th — Maharashtra Board)
 # ══════════════════════════════════════════════════════════════
 SUBJECT_CHAPTERS = {
     "History": [
@@ -379,19 +477,69 @@ SUBJECT_CHAPTERS = {
 }
 
 SUBJECT_ICONS  = {"History":"📜","Geography":"🌍","Science":"🔬","Maths":"📐","English":"📖"}
-SUBJECT_COLORS = {"History":"#FF6B6B","Geography":"#4ECDC4","Science":"#6C63FF","Maths":"#FFD93D","English":"#FF6584"}
+SUBJECT_COLORS = {"History":"#FF6B6B","Geography":"#4ECDC4","Science":"#7C73FF","Maths":"#FFD93D","English":"#FF6584"}
 
 # ══════════════════════════════════════════════════════════════
-# 5. SESSION STATE INIT
+# 5. PERSISTENT STORAGE (JSON File)
 # ══════════════════════════════════════════════════════════════
-def init_state():
-    defaults = {
+SAVE_FILE = "jayesh_tutorial_data.json"
+
+def load_saved_data():
+    """Load saved chat + stats from JSON file"""
+    default = {
         "messages": [],
         "total_q": 0,
         "total_tests": 0,
         "subject_hist": {s: 0 for s in SUBJECT_CHAPTERS},
         "session_ts": datetime.now().strftime("%d %b %Y · %I:%M %p"),
         "selected_subject": "Science",
+    }
+    if os.path.exists(SAVE_FILE):
+        try:
+            with open(SAVE_FILE, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+            # Merge with defaults in case new fields added
+            for k, v in default.items():
+                if k not in saved:
+                    saved[k] = v
+            # Ensure all subjects exist in hist
+            for s in SUBJECT_CHAPTERS:
+                if s not in saved["subject_hist"]:
+                    saved["subject_hist"][s] = 0
+            return saved
+        except Exception:
+            return default
+    return default
+
+def save_data_to_file():
+    """Save current session state to JSON file"""
+    try:
+        data = {
+            "messages": st.session_state.messages,
+            "total_q": st.session_state.total_q,
+            "total_tests": st.session_state.total_tests,
+            "subject_hist": st.session_state.subject_hist,
+            "session_ts": st.session_state.session_ts,
+            "selected_subject": st.session_state.selected_subject,
+        }
+        with open(SAVE_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        pass  # Silently fail — don't break the app
+
+# ══════════════════════════════════════════════════════════════
+# 6. SESSION STATE INIT (from saved file)
+# ══════════════════════════════════════════════════════════════
+def init_state():
+    saved = load_saved_data()
+    defaults = {
+        "messages": saved["messages"],
+        "total_q": saved["total_q"],
+        "total_tests": saved["total_tests"],
+        "subject_hist": saved["subject_hist"],
+        "session_ts": saved.get("session_ts", datetime.now().strftime("%d %b %Y · %I:%M %p")),
+        "selected_subject": saved.get("selected_subject", "Science"),
+        "needs_save": False,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -400,9 +548,9 @@ def init_state():
 init_state()
 
 # ══════════════════════════════════════════════════════════════
-# 6. PERSONA & HELPERS
+# 7. PERSONA & HELPERS
 # ══════════════════════════════════════════════════════════════
-def persona(subject=None):
+def get_persona(subject=None):
     p = """You are **Jayesh Sir**, a passionate 9th-SSC (Maharashtra Board) tutor.
 RULES:
 • Start EVERY reply with 'Jayesh Sir:- '
@@ -420,7 +568,7 @@ RULES:
         p += f"\n• Currently teaching: **{subject}**"
     return p
 
-def call_gemini(prompt, image=None, model_key="gemini-2.0-flash"):
+def call_gemini(prompt, image=None, model_key="gemini-3.5-flash"):
     try:
         model = genai.GenerativeModel(model_key)
         if image:
@@ -457,12 +605,12 @@ TIPS = [
     "⏰ Solve previous-year papers under exam conditions",
     "💪 Never skip diagrams in Science — they carry marks!",
     "📚 Make flashcards for History dates — review them daily",
-    "🌙 Revise before sleeping — your brain consolidates during sleep",
+    "🌙 Revise before sleeping — your brain consolidates during sleep!",
     "✍️ Write mock answers — writing practice improves speed & presentation!",
 ]
 
 # ══════════════════════════════════════════════════════════════
-# 7. HEADER & STATS
+# 8. HEADER & STATS
 # ══════════════════════════════════════════════════════════════
 st.markdown('<h1 class="main-title">🎓 Jayesh Tutorial — SSC Genius AI</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Your personal AI tutor for 9th SSC Board &nbsp;|&nbsp; Powered by Gemini ✨</p>', unsafe_allow_html=True)
@@ -483,7 +631,7 @@ with s5:
 st.markdown("---")
 
 # ══════════════════════════════════════════════════════════════
-# 8. THREE-COLUMN LAYOUT
+# 9. THREE-COLUMN LAYOUT
 # ══════════════════════════════════════════════════════════════
 col_left, col_center, col_right = st.columns([1.1, 2.6, 0.75])
 
@@ -496,6 +644,7 @@ with col_left:
     for sub in SUBJECT_CHAPTERS:
         if st.button(f"{SUBJECT_ICONS[sub]}  {sub}", key=f"sub_{sub}", use_container_width=True):
             st.session_state.selected_subject = sub
+            save_data_to_file()
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -558,19 +707,22 @@ with col_center:
             full = f"{prefill}\n{prompt}" if prefill else prompt
 
             st.session_state.messages.append({"role": "user", "content": prompt})
+            save_data_to_file()
+
             with chat_box:
                 with st.chat_message("user"):
                     st.markdown(prompt)
                 with st.chat_message("assistant"):
                     with st.spinner("👨‍🏫 Jayesh Sir is thinking…"):
                         ai_prompt = (
-                            f"{persona(sel_sub)}\n"
+                            f"{get_persona(sel_sub)}\n"
                             f"Subject: {sel_sub} | Chapter: {chapter} | Difficulty: {difficulty}\n"
                             f"Student Query: {full}"
                         )
                         resp = call_gemini(ai_prompt, model_key=model_key)
                         st.markdown(resp)
                 st.session_state.messages.append({"role": "assistant", "content": resp})
+                save_data_to_file()
 
     # ═══════ TAB 2 — TEST GENERATOR ═══════
     with tab_test:
@@ -597,10 +749,11 @@ with col_center:
         if st.button("🚀 Generate Test Paper", use_container_width=True, type="primary"):
             if test_chap:
                 st.session_state.total_tests += 1
+                save_data_to_file()
                 with st.spinner("👨‍🏫 Jayesh Sir is preparing your test…"):
                     ans_note = "Include a DETAILED ANSWER KEY at the end." if ans_key else "Do NOT include answers."
                     tp = (
-                        f"{persona(sel_sub)}\n\n"
+                        f"{get_persona(sel_sub)}\n\n"
                         f"Generate a COMPLETE, NEW, UNIQUE test paper:\n"
                         f"📚 Subject: {sel_sub}\n"
                         f"📖 Chapter: {test_chap}\n"
@@ -616,6 +769,7 @@ with col_center:
                     )
                     resp = call_gemini(tp, model_key=model_key)
                     st.session_state.messages.append({"role": "assistant", "content": f"📋 **Test Paper — {test_chap}**\n\n{resp}"})
+                    save_data_to_file()
                     st.markdown(resp)
 
                     st.download_button(
@@ -645,7 +799,7 @@ with col_center:
         if st.button("🧠 Generate Summary", use_container_width=True, type="primary"):
             with st.spinner("👨‍🏫 Jayesh Sir is creating your summary…"):
                 sp = (
-                    f"{persona(sel_sub)}\n\n"
+                    f"{get_persona(sel_sub)}\n\n"
                     f"Create a comprehensive summary:\n"
                     f"📚 Subject: {sel_sub}\n"
                     f"📖 Chapter: {chapter}\n"
@@ -658,6 +812,7 @@ with col_center:
                 )
                 resp = call_gemini(sp, model_key=model_key)
                 st.session_state.messages.append({"role": "assistant", "content": f"🧠 **Summary — {chapter}**\n\n{resp}"})
+                save_data_to_file()
                 st.markdown(resp)
 
                 st.download_button(
@@ -679,7 +834,7 @@ with col_center:
                 with st.spinner("👨‍🏫 Jayesh Sir is reading your image…"):
                     image = Image.open(img_file)
                     dp = (
-                        f"{persona(sel_sub)}\n\n"
+                        f"{get_persona(sel_sub)}\n\n"
                         f"The student has uploaded an image of a question/diagram.\n"
                         f"Subject: {sel_sub} | Chapter: {chapter}\n"
                         f"Extra context: {doubt_txt if doubt_txt else 'None'}\n\n"
@@ -690,6 +845,7 @@ with col_center:
                     )
                     resp = call_gemini(dp, image=image, model_key=model_key)
                     st.session_state.messages.append({"role": "assistant", "content": f"📸 **Doubt Solved!**\n\n{resp}"})
+                    save_data_to_file()
                     st.markdown(resp)
             else:
                 st.warning("⚠️ Please upload an image first!")
@@ -703,6 +859,7 @@ with col_right:
 
     if st.button("🗑️ Clear Chat", use_container_width=True):
         st.session_state.messages = []
+        save_data_to_file()
         st.rerun()
 
     chat_exp = export_chat_text()
@@ -745,3 +902,8 @@ with col_right:
         f"🕐 Session: {st.session_state.session_ts}"
     )
     st.markdown('</div>', unsafe_allow_html=True)
+
+# ══════════════════════════════════════════════════════════════
+# 10. AUTO-SAVE ON PAGE RERUN (safety net)
+# ══════════════════════════════════════════════════════════════
+save_data_to_file()
