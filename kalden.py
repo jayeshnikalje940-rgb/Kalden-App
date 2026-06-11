@@ -13,11 +13,11 @@ st.set_page_config(
     page_title="Jayesh Tutorial - SSC Genius AI",
     page_icon="🎓",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # ══════════════════════════════════════════════════════════════
-# 2. PREMIUM DARK CSS — TEXT VISIBILITY FIXED
+# 2. COMPLETE CSS — SIDEBAR STYLE + TEXT VISIBLE
 # ══════════════════════════════════════════════════════════════
 custom_css = """
 <style>
@@ -25,62 +25,96 @@ custom_css = """
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
-[data-testid="stSidebar"] {display: none;}
 
-/* ── Root Variables ── */
+/* ── Root Colors ── */
 :root {
     --primary: #7C73FF;
-    --primary-glow: rgba(124,115,255,0.35);
+    --primary-glow: rgba(124,115,255,0.4);
     --secondary: #FF6584;
     --accent: #00D68F;
     --bg-dark: #0F0F1E;
-    --glass: rgba(255,255,255,0.07);
-    --glass-hover: rgba(255,255,255,0.12);
-    --glass-border: rgba(255,255,255,0.15);
+    --bg-sidebar: #161630;
+    --glass: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,255,255,0.12);
     --text-primary: #FFFFFF;
-    --text-secondary: #B0B0CC;
+    --text-secondary: #B8B8D4;
     --text-dim: #7878A0;
 }
 
-/* ── Global Text Override — MOST IMPORTANT ── */
-.stApp, .stApp * {
-    color: var(--text-primary) !important;
-}
-
-/* Specific overrides for elements that need dimmer text */
-.stApp .stCaption, .stApp .stCaption * {
-    color: var(--text-secondary) !important;
-}
-
+/* ── Main App Background ── */
 .stApp {
-    background: var(--bg-dark);
+    background: var(--bg-dark) !important;
 }
 
-/* Animated mesh background */
 .stApp::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(ellipse 600px 600px at 15% 80%, rgba(124,115,255,0.13) 0%, transparent 70%),
-        radial-gradient(ellipse 500px 500px at 85% 15%, rgba(255,101,132,0.09) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 400px at 50% 50%, rgba(0,214,143,0.07) 0%, transparent 70%);
+        radial-gradient(ellipse 600px 600px at 20% 80%, rgba(124,115,255,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 500px at 80% 20%, rgba(255,101,132,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 400px at 50% 50%, rgba(0,214,143,0.05) 0%, transparent 70%);
     z-index: -1;
-    animation: bgPulse 12s ease-in-out infinite alternate;
-}
-@keyframes bgPulse {
-    0%   { opacity: .7; }
-    100% { opacity: 1; }
+    pointer-events: none;
 }
 
+/* ── GLOBAL TEXT FIX — SAB KUCH WHITE ── */
+.stApp, .stApp p, .stApp span, .stApp label,
+.stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+.stApp li, .stApp strong, .stApp em, .stApp a,
+.stApp th, .stApp td, .stApp small {
+    color: var(--text-primary) !important;
+}
+
+.stApp .stCaption {
+    color: var(--text-secondary) !important;
+}
+
+/* ── SIDEBAR STYLING ── */
+[data-testid="stSidebar"] {
+    background: var(--bg-sidebar) !important;
+    border-right: 1px solid var(--glass-border) !important;
+    min-width: 280px !important;
+    max-width: 320px !important;
+}
+
+[data-testid="stSidebar"] > div:first-child {
+    padding: 1.2rem 1rem !important;
+}
+
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] h4,
+[data-testid="stSidebar"] li,
+[data-testid="stSidebar"] strong {
+    color: #FFFFFF !important;
+}
+
+/* Sidebar section headers */
+.sidebar-header {
+    font-size: 0.80rem;
+    font-weight: 700;
+    color: var(--primary) !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 1.2rem 0 0.5rem 0;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+/* ── Block Container ── */
 .block-container {
-    padding: 1rem 2rem 2rem;
-    max-width: 1500px;
+    padding: 1.5rem 2.5rem 2rem !important;
+    max-width: 1400px;
 }
 
 /* ── Title ── */
 .main-title {
-    font-size: 2.8rem !important;
+    font-size: 2.6rem !important;
     font-weight: 900 !important;
     background: linear-gradient(135deg, #7C73FF 0%, #FF6584 100%) !important;
     -webkit-background-clip: text !important;
@@ -88,66 +122,47 @@ header {visibility: hidden;}
     background-clip: text !important;
     text-align: center;
     line-height: 1.2 !important;
-    animation: fadeDown .7s ease-out;
+    margin-bottom: 0.1rem !important;
 }
 .subtitle {
     text-align: center;
-    color: var(--text-secondary) !important;
-    font-size: .95rem;
-    margin-bottom: 1.2rem;
-    animation: fadeDown .7s ease-out .15s both;
+    color: var(--text-dim) !important;
+    font-size: 0.90rem;
+    margin-bottom: 1rem;
 }
 
-/* ── Glass Card ── */
-.glass-card {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 1.25rem;
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    transition: border-color .3s, box-shadow .3s;
-    animation: fadeUp .5s ease-out;
-}
-.glass-card:hover {
-    border-color: rgba(124,115,255,0.35);
-    box-shadow: 0 0 30px rgba(124,115,255,0.06);
-}
-
-/* ── Section Header ── */
-.sec-head {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--primary) !important;
-    margin-bottom: .75rem;
+/* ── Stat Cards Row ── */
+.stat-row {
     display: flex;
-    align-items: center;
-    gap: .4rem;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
 }
-
-/* ── Stat Cards ── */
 .stat-card {
     background: var(--glass);
     border: 1px solid var(--glass-border);
     border-radius: 14px;
-    padding: .7rem .5rem;
+    padding: 0.6rem 1.2rem;
     text-align: center;
-    transition: transform .25s, box-shadow .25s;
+    min-width: 100px;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 .stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 24px rgba(124,115,255,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(124,115,255,0.15);
 }
 .stat-num {
-    font-size: 1.7rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #7C73FF, #FF6584) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
+    background: linear-gradient(135deg, #7C73FF, #FF6584);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3;
 }
 .stat-lbl {
-    font-size: .65rem;
+    font-size: 0.60rem;
     color: var(--text-dim) !important;
     text-transform: uppercase;
     letter-spacing: 1.2px;
@@ -160,9 +175,10 @@ header {visibility: hidden;}
     border: none !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
-    padding: .55rem 1rem !important;
-    transition: all .25s !important;
+    padding: 0.50rem 1rem !important;
+    transition: all 0.25s !important;
     white-space: nowrap;
+    font-size: 0.90rem !important;
 }
 .stButton>button:hover {
     transform: translateY(-2px) !important;
@@ -172,16 +188,24 @@ header {visibility: hidden;}
     color: #FFFFFF !important;
 }
 
+/* Subject button active state */
+.subject-active > button {
+    background: linear-gradient(135deg, #00D68F, #0EA5E9) !important;
+    box-shadow: 0 0 20px rgba(0,214,143,0.3) !important;
+}
+
 /* ── Chat Messages ── */
 .stChatMessage {
     background: var(--glass) !important;
     border: 1px solid var(--glass-border) !important;
     border-radius: 14px !important;
-    padding: .9rem !important;
-    margin-bottom: .4rem !important;
+    padding: 0.9rem !important;
+    margin-bottom: 0.4rem !important;
 }
 .stChatMessage p, .stChatMessage span, .stChatMessage div,
-.stChatMessage li, .stChatMessage strong, .stChatMessage em {
+.stChatMessage li, .stChatMessage strong, .stChatMessage em,
+.stChatMessage h1, .stChatMessage h2, .stChatMessage h3,
+.stChatMessage h4, .stChatMessage td, .stChatMessage th {
     color: #FFFFFF !important;
 }
 .stChatMessage code {
@@ -189,7 +213,7 @@ header {visibility: hidden;}
     background: rgba(255,255,255,0.08) !important;
 }
 .stChatMessage pre {
-    background: rgba(0,0,0,0.3) !important;
+    background: rgba(0,0,0,0.35) !important;
     border: 1px solid var(--glass-border) !important;
     border-radius: 10px !important;
 }
@@ -214,25 +238,23 @@ header {visibility: hidden;}
     color: #FFFFFF !important;
     background: rgba(255,255,255,0.04) !important;
     caret-color: #7C73FF !important;
+    font-size: 1rem !important;
 }
 .stChatInput textarea::placeholder {
     color: var(--text-dim) !important;
-}
-.stChatInput label, .stChatInput div[data-testid="stChatInputLabel"] {
-    color: var(--text-secondary) !important;
 }
 
 /* ── Text / Number Inputs ── */
 .stTextInput>div>div>input,
 .stNumberInput>div>div>input {
     background: rgba(255,255,255,0.06) !important;
-    border-color: var(--glass-border) !important;
+    border: 1px solid var(--glass-border) !important;
     color: #FFFFFF !important;
     border-radius: 10px !important;
     caret-color: #7C73FF !important;
+    font-size: 0.95rem !important;
 }
-.stTextInput>div>div>input::placeholder,
-.stNumberInput>div>div>input::placeholder {
+.stTextInput>div>div>input::placeholder {
     color: var(--text-dim) !important;
 }
 .stTextInput label, .stNumberInput label {
@@ -245,7 +267,7 @@ header {visibility: hidden;}
 }
 .stSelectbox>div>div {
     background: rgba(255,255,255,0.06) !important;
-    border-color: var(--glass-border) !important;
+    border: 1px solid var(--glass-border) !important;
     color: #FFFFFF !important;
     border-radius: 10px !important;
 }
@@ -255,7 +277,7 @@ header {visibility: hidden;}
 
 /* ── Tabs ── */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 6px;
+    gap: 5px;
     background: var(--glass);
     border-radius: 12px;
     padding: 4px;
@@ -265,7 +287,8 @@ header {visibility: hidden;}
     border-radius: 8px !important;
     color: var(--text-dim) !important;
     font-weight: 600 !important;
-    font-size: .9rem !important;
+    font-size: 0.88rem !important;
+    padding: 6px 14px !important;
 }
 .stTabs [aria-selected="true"] {
     background: var(--primary) !important;
@@ -276,12 +299,6 @@ header {visibility: hidden;}
 }
 
 /* ── Radio ── */
-.stRadio>div {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 10px;
-    padding: .5rem;
-}
 .stRadio label p {
     color: #FFFFFF !important;
 }
@@ -296,7 +313,7 @@ section[data-testid="stFileUploader"] {
     border: 2px dashed var(--glass-border) !important;
     border-radius: 14px !important;
     background: var(--glass) !important;
-    padding: .8rem !important;
+    padding: 0.8rem !important;
 }
 section[data-testid="stFileUploader"] label,
 section[data-testid="stFileUploader"] span,
@@ -308,33 +325,59 @@ section[data-testid="stFileUploader"] small {
 .stSelectSlider label p {
     color: #FFFFFF !important;
 }
-.stSelectSlider div[data-baseweb="slider"] {
-    color: #FFFFFF !important;
-}
 
 /* ── Progress ── */
 .stProgress>div>div>div {
     background: linear-gradient(135deg, #7C73FF, #FF6584) !important;
 }
-.stProgress div[role="progressbar"] p,
 .stProgress p {
     color: #FFFFFF !important;
 }
 
-/* ── Success / Warning / Info / Error ── */
-.stSuccess { border-radius: 12px !important; }
-.stSuccess p, .stSuccess div { color: #1B7A3D !important; }
-.stWarning { border-radius: 12px !important; }
-.stWarning p, .stWarning div { color: #8B6914 !important; }
-.stError   { border-radius: 12px !important; }
-.stError p, .stError div { color: #C53030 !important; }
-.stInfo    { border-radius: 12px !important; }
-.stInfo p, .stInfo div { color: #2B6CB0 !important; }
+/* ── Expander ── */
+.streamlit-expanderHeader {
+    background: var(--glass) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 10px !important;
+    color: #FFFFFF !important;
+}
+.streamlit-expanderHeader p {
+    color: #FFFFFF !important;
+}
 
-/* ── Markdown rendered text ── */
+/* ── Success / Warning / Info / Error ── */
+.stSuccess {
+    border-radius: 12px !important;
+    background: rgba(0,214,143,0.15) !important;
+    border: 1px solid rgba(0,214,143,0.3) !important;
+}
+.stSuccess p { color: #00D68F !important; }
+
+.stWarning {
+    border-radius: 12px !important;
+    background: rgba(255,211,61,0.15) !important;
+    border: 1px solid rgba(255,211,61,0.3) !important;
+}
+.stWarning p { color: #FFD93D !important; }
+
+.stError {
+    border-radius: 12px !important;
+    background: rgba(239,68,68,0.15) !important;
+    border: 1px solid rgba(239,68,68,0.3) !important;
+}
+.stError p { color: #EF4444 !important; }
+
+.stInfo {
+    border-radius: 12px !important;
+    background: rgba(124,115,255,0.12) !important;
+    border: 1px solid rgba(124,115,255,0.25) !important;
+}
+.stInfo p { color: #7C73FF !important; }
+
+/* ── Markdown text ── */
 .stMarkdown p, .stMarkdown li, .stMarkdown span,
-.stMarkdown strong, .stMarkdown em, .stMarkdown h1,
-.stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+.stMarkdown strong, .stMarkdown em,
+.stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
     color: #FFFFFF !important;
 }
 .stMarkdown code {
@@ -343,14 +386,6 @@ section[data-testid="stFileUploader"] small {
     padding: 2px 6px;
     border-radius: 4px;
 }
-.stMarkdown pre {
-    background: rgba(0,0,0,0.3) !important;
-    border: 1px solid var(--glass-border) !important;
-    border-radius: 10px !important;
-}
-
-/* ── Divider ── */
-hr { border-color: var(--glass-border) !important; }
 
 /* ── Download Button ── */
 .stDownloadButton>button {
@@ -365,50 +400,45 @@ hr { border-color: var(--glass-border) !important; }
     color: #FFFFFF !important;
 }
 
+/* ── Divider ── */
+hr {
+    border-color: var(--glass-border) !important;
+    margin: 0.6rem 0 !important;
+}
+
+/* ── Spinner ── */
+.stSpinner p {
+    color: #FFFFFF !important;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
 
-/* ── Keyframes ── */
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-18px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Spinner text ── */
-.stSpinner p {
-    color: #FFFFFF !important;
+/* ── Sidebar Toggle Button ── */
+button[kind="header"] {
+    display: none !important;
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-    .main-title { font-size: 1.7rem !important; }
-    .stat-num   { font-size: 1.2rem; }
-    .glass-card { padding: .8rem; }
-    .block-container { padding: .6rem .8rem; }
+    .main-title { font-size: 1.6rem !important; }
+    .stat-num { font-size: 1.1rem; }
+    .block-container { padding: 0.5rem 0.8rem !important; }
+    .stat-card { min-width: 70px; padding: 0.4rem 0.6rem; }
 }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════
-# 3. API SETUP — ONLY gemini-3.5-flash
+# 3. API SETUP — gemini-3.5-flash ONLY
 # ══════════════════════════════════════════════════════════════
 genai.configure(api_key=st.secrets["API_KEY"])
 
-MODEL_MAP = {
-    "⚡ Flash (Fast)": "gemini-3.5-flash",
-    "🧠 Pro  (Smart)": "gemini-1.5-pro",
-    "🚀 Flash Lite":   "gemini-2.0-flash-lite",
-}
-
 # ══════════════════════════════════════════════════════════════
-# 4. SUBJECT DATA (SSC 9th — Maharashtra Board)
+# 4. SUBJECT DATA
 # ══════════════════════════════════════════════════════════════
 SUBJECT_CHAPTERS = {
     "History": [
@@ -476,72 +506,62 @@ SUBJECT_CHAPTERS = {
     ],
 }
 
-SUBJECT_ICONS  = {"History":"📜","Geography":"🌍","Science":"🔬","Maths":"📐","English":"📖"}
-SUBJECT_COLORS = {"History":"#FF6B6B","Geography":"#4ECDC4","Science":"#7C73FF","Maths":"#FFD93D","English":"#FF6584"}
+SUBJECT_ICONS = {"History":"📜","Geography":"🌍","Science":"🔬","Maths":"📐","English":"📖"}
 
 # ══════════════════════════════════════════════════════════════
-# 5. PERSISTENT STORAGE (JSON File)
+# 5. PERSISTENT STORAGE
 # ══════════════════════════════════════════════════════════════
 SAVE_FILE = "jayesh_tutorial_data.json"
 
 def load_saved_data():
-    """Load saved chat + stats from JSON file"""
     default = {
         "messages": [],
         "total_q": 0,
         "total_tests": 0,
         "subject_hist": {s: 0 for s in SUBJECT_CHAPTERS},
-        "session_ts": datetime.now().strftime("%d %b %Y · %I:%M %p"),
         "selected_subject": "Science",
     }
     if os.path.exists(SAVE_FILE):
         try:
             with open(SAVE_FILE, "r", encoding="utf-8") as f:
                 saved = json.load(f)
-            # Merge with defaults in case new fields added
             for k, v in default.items():
                 if k not in saved:
                     saved[k] = v
-            # Ensure all subjects exist in hist
             for s in SUBJECT_CHAPTERS:
-                if s not in saved["subject_hist"]:
+                if s not in saved.get("subject_hist", {}):
                     saved["subject_hist"][s] = 0
             return saved
         except Exception:
             return default
     return default
 
-def save_data_to_file():
-    """Save current session state to JSON file"""
+def save_data():
     try:
         data = {
             "messages": st.session_state.messages,
             "total_q": st.session_state.total_q,
             "total_tests": st.session_state.total_tests,
             "subject_hist": st.session_state.subject_hist,
-            "session_ts": st.session_state.session_ts,
             "selected_subject": st.session_state.selected_subject,
         }
         with open(SAVE_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        pass  # Silently fail — don't break the app
+    except Exception:
+        pass
 
 # ══════════════════════════════════════════════════════════════
-# 6. SESSION STATE INIT (from saved file)
+# 6. SESSION STATE
 # ══════════════════════════════════════════════════════════════
 def init_state():
     saved = load_saved_data()
-    defaults = {
+    for k, v in {
         "messages": saved["messages"],
         "total_q": saved["total_q"],
         "total_tests": saved["total_tests"],
         "subject_hist": saved["subject_hist"],
-        "session_ts": saved.get("session_ts", datetime.now().strftime("%d %b %Y · %I:%M %p")),
         "selected_subject": saved.get("selected_subject", "Science"),
-        "needs_save": False,
-    }
-    for k, v in defaults.items():
+    }.items():
         if k not in st.session_state:
             st.session_state[k] = v
 
@@ -568,21 +588,21 @@ RULES:
         p += f"\n• Currently teaching: **{subject}**"
     return p
 
-def call_gemini(prompt, image=None, model_key="gemini-3.5-flash"):
+def call_gemini(prompt, image=None):
     try:
-        model = genai.GenerativeModel(model_key)
+        model = genai.GenerativeModel("gemini-3.5-flash")
         if image:
             resp = model.generate_content([prompt, image])
         else:
             resp = model.generate_content(prompt)
         return resp.text
     except Exception as e:
-        return f"Jayesh Sir:- Oops! Kuch technical issue aa gaya 😅\n```\n{e}\n```"
+        return f"Jayesh Sir:- Oops! Technical issue 😅\n```\n{e}\n```"
 
-def export_chat_text():
+def export_chat():
     if not st.session_state.messages:
         return ""
-    txt  = f"📚 Jayesh Tutorial — Chat Export\n📅 {st.session_state.session_ts}\n{'='*55}\n\n"
+    txt = f"📚 Jayesh Tutorial — Chat Export\n📅 {datetime.now().strftime('%d %b %Y · %I:%M %p')}\n{'='*55}\n\n"
     for m in st.session_state.messages:
         who = "👨‍🎓 Student" if m["role"] == "user" else "👨‍🏫 Jayesh Sir"
         txt += f"{who}:\n{m['content']}\n\n{'─'*45}\n\n"
@@ -599,270 +619,79 @@ QUICK_PROMPTS = {
 TIPS = [
     "📖 Read the chapter once *before* class — you'll understand 2× better!",
     "📝 Write answers in points — Board examiners love structured answers!",
-    "🧠 Use the Pomodoro technique: 25 min study → 5 min break",
+    "🧠 Use Pomodoro technique: 25 min study → 5 min break",
     "📐 For Maths: solve 5 problems daily — consistency beats cramming!",
-    "🎯 Highlight keywords in your textbook — helps in quick revision",
+    "🎯 Highlight keywords — helps in quick revision",
     "⏰ Solve previous-year papers under exam conditions",
     "💪 Never skip diagrams in Science — they carry marks!",
-    "📚 Make flashcards for History dates — review them daily",
-    "🌙 Revise before sleeping — your brain consolidates during sleep!",
-    "✍️ Write mock answers — writing practice improves speed & presentation!",
+    "📚 Make flashcards for History dates — review daily",
+    "🌙 Revise before sleeping — brain consolidates during sleep!",
+    "✍️ Write mock answers — practice improves speed & presentation!",
 ]
 
 # ══════════════════════════════════════════════════════════════
-# 8. HEADER & STATS
+# 8. SIDEBAR — SUBJECTS + CHAPTERS + SETTINGS
 # ══════════════════════════════════════════════════════════════
-st.markdown('<h1 class="main-title">🎓 Jayesh Tutorial — SSC Genius AI</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Your personal AI tutor for 9th SSC Board &nbsp;|&nbsp; Powered by Gemini ✨</p>', unsafe_allow_html=True)
+with st.sidebar:
+    st.markdown("## 🎓 Jayesh Tutorial")
+    st.caption("SSC 9th Board • AI Tutor")
 
-s1, s2, s3, s4, s5 = st.columns(5)
-with s1:
-    st.markdown(f'<div class="stat-card"><div class="stat-num">{st.session_state.total_q}</div><div class="stat-lbl">Questions</div></div>', unsafe_allow_html=True)
-with s2:
-    st.markdown(f'<div class="stat-card"><div class="stat-num">{st.session_state.total_tests}</div><div class="stat-lbl">Tests</div></div>', unsafe_allow_html=True)
-with s3:
-    st.markdown(f'<div class="stat-card"><div class="stat-num">{len(st.session_state.messages)}</div><div class="stat-lbl">Messages</div></div>', unsafe_allow_html=True)
-with s4:
-    fav = max(st.session_state.subject_hist, key=st.session_state.subject_hist.get) if any(st.session_state.subject_hist.values()) else "—"
-    st.markdown(f'<div class="stat-card"><div class="stat-num">{SUBJECT_ICONS.get(fav,"📚")}</div><div class="stat-lbl">Top Subject</div></div>', unsafe_allow_html=True)
-with s5:
-    st.markdown(f'<div class="stat-card"><div class="stat-num">9th</div><div class="stat-lbl">SSC Board</div></div>', unsafe_allow_html=True)
+    st.markdown('<p class="sidebar-header">📚 SELECT SUBJECT</p>', unsafe_allow_html=True)
 
-st.markdown("---")
-
-# ══════════════════════════════════════════════════════════════
-# 9. THREE-COLUMN LAYOUT
-# ══════════════════════════════════════════════════════════════
-col_left, col_center, col_right = st.columns([1.1, 2.6, 0.75])
-
-# ────────────────── LEFT PANEL ──────────────────
-with col_left:
-
-    # ── Subject ──
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="sec-head">📚 Subject</div>', unsafe_allow_html=True)
     for sub in SUBJECT_CHAPTERS:
-        if st.button(f"{SUBJECT_ICONS[sub]}  {sub}", key=f"sub_{sub}", use_container_width=True):
+        is_active = st.session_state.selected_subject == sub
+        btn_key = f"sub_btn_{sub}"
+        if st.button(
+            f"{'✅' if is_active else SUBJECT_ICONS[sub]}  {sub}",
+            key=btn_key,
+            use_container_width=True,
+        ):
             st.session_state.selected_subject = sub
-            save_data_to_file()
+            save_data()
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
     sel_sub = st.session_state.selected_subject
 
-    st.markdown("<div style='height:.6rem'></div>", unsafe_allow_html=True)
+    st.markdown('<p class="sidebar-header">📖 SELECT CHAPTER</p>', unsafe_allow_html=True)
+    chapter = st.selectbox(
+        "Chapter",
+        SUBJECT_CHAPTERS[sel_sub],
+        key="chap_sel",
+        label_visibility="collapsed"
+    )
 
-    # ── Chapter ──
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="sec-head">📖 Chapter</div>', unsafe_allow_html=True)
-    chapter = st.selectbox("Pick chapter", SUBJECT_CHAPTERS[sel_sub], key="chap_sel", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown("<div style='height:.6rem'></div>", unsafe_allow_html=True)
-
-    # ── Settings ──
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="sec-head">⚙️ Settings</div>', unsafe_allow_html=True)
+    st.markdown('<p class="sidebar-header">⚙️ SETTINGS</p>', unsafe_allow_html=True)
     difficulty = st.selectbox("Difficulty", ["Easy 🟢","Medium 🟡","Hard 🔴"], index=1)
-    model_lbl  = st.selectbox("AI Model", list(MODEL_MAP.keys()), index=0)
-    model_key  = MODEL_MAP[model_lbl]
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# ────────────────── CENTER PANEL ──────────────────
-with col_center:
+    st.markdown("---")
 
-    tab_chat, tab_test, tab_summary, tab_doubt = st.tabs([
-        "💬 Chat",
-        "📝 Test Generator",
-        "🧠 Quick Summary",
-        "📸 Doubt Solver",
-    ])
+    # ── Stats in Sidebar ──
+    st.markdown('<p class="sidebar-header">📊 YOUR STATS</p>', unsafe_allow_html=True)
+    st.markdown(f"**💬 Questions Asked:** {st.session_state.total_q}")
+    st.markdown(f"**📝 Tests Generated:** {st.session_state.total_tests}")
+    st.markdown(f"**📜 Total Messages:** {len(st.session_state.messages)}")
 
-    # ═══════ TAB 1 — CHAT ═══════
-    with tab_chat:
-        st.markdown("### 💬 Chat with Jayesh Sir")
+    fav = max(st.session_state.subject_hist, key=st.session_state.subject_hist.get) if any(st.session_state.subject_hist.values()) else None
+    if fav:
+        st.markdown(f"**🏆 Top Subject:** {SUBJECT_ICONS[fav]} {fav}")
 
-        # Quick prompts
-        st.markdown("**⚡ Quick Prompts**")
-        qp = QUICK_PROMPTS[sel_sub]
-        q1, q2 = st.columns(2)
-        for i, q in enumerate(qp):
-            with (q1 if i % 2 == 0 else q2):
-                if st.button(q, key=f"qp{i}", use_container_width=True):
-                    st.session_state["prefill"] = q
+    # Subject usage bars
+    for sub, cnt in st.session_state.subject_hist.items():
+        if cnt > 0:
+            pct = min(cnt / 10, 1.0)
+            st.progress(pct, text=f"{SUBJECT_ICONS[sub]} {sub} ({cnt})")
 
-        # Chat history
-        chat_box = st.container()
-        with chat_box:
-            for m in st.session_state.messages:
-                with st.chat_message(m["role"]):
-                    st.markdown(m["content"])
-
-        # Input
-        prefill = st.session_state.pop("prefill", "")
-        if prompt := st.chat_input("Ask Jayesh Sir anything… 💭"):
-            st.session_state.subject_hist[sel_sub] += 1
-            st.session_state.total_q += 1
-
-            full = f"{prefill}\n{prompt}" if prefill else prompt
-
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            save_data_to_file()
-
-            with chat_box:
-                with st.chat_message("user"):
-                    st.markdown(prompt)
-                with st.chat_message("assistant"):
-                    with st.spinner("👨‍🏫 Jayesh Sir is thinking…"):
-                        ai_prompt = (
-                            f"{get_persona(sel_sub)}\n"
-                            f"Subject: {sel_sub} | Chapter: {chapter} | Difficulty: {difficulty}\n"
-                            f"Student Query: {full}"
-                        )
-                        resp = call_gemini(ai_prompt, model_key=model_key)
-                        st.markdown(resp)
-                st.session_state.messages.append({"role": "assistant", "content": resp})
-                save_data_to_file()
-
-    # ═══════ TAB 2 — TEST GENERATOR ═══════
-    with tab_test:
-        st.markdown("### 📝 Test Paper Generator")
-
-        tc1, tc2 = st.columns(2)
-        with tc1:
-            test_chap  = st.text_input("📖 Chapter Name", value=chapter)
-            test_marks = st.number_input("📊 Total Marks", 5, 100, 20, step=5)
-        with tc2:
-            test_type = st.selectbox("Question Type", [
-                "All Mixed",
-                "Short Answer (2-3 marks)",
-                "Long Answer (5 marks)",
-                "Fill in the Blanks (1 mark)",
-                "Match the Following",
-                "True or False",
-                "Multiple Choice (MCQ)",
-            ])
-            ans_key = st.checkbox("✅ Include Answer Key", value=True)
-
-        test_diff = st.select_slider("🎯 Difficulty", options=["Easy","Medium","Hard"], value="Medium")
-
-        if st.button("🚀 Generate Test Paper", use_container_width=True, type="primary"):
-            if test_chap:
-                st.session_state.total_tests += 1
-                save_data_to_file()
-                with st.spinner("👨‍🏫 Jayesh Sir is preparing your test…"):
-                    ans_note = "Include a DETAILED ANSWER KEY at the end." if ans_key else "Do NOT include answers."
-                    tp = (
-                        f"{get_persona(sel_sub)}\n\n"
-                        f"Generate a COMPLETE, NEW, UNIQUE test paper:\n"
-                        f"📚 Subject: {sel_sub}\n"
-                        f"📖 Chapter: {test_chap}\n"
-                        f"📊 Total Marks: {test_marks}\n"
-                        f"📝 Question Type: {test_type}\n"
-                        f"🎯 Difficulty: {test_diff}\n"
-                        f"✅ {ans_note}\n\n"
-                        f"Format professionally:\n"
-                        f"• Header: Subject / Chapter / Total Marks / Time\n"
-                        f"• Clear numbering & marks per question\n"
-                        f"• Proper spacing\n"
-                        f"• Follow SSC Board pattern strictly\n"
-                    )
-                    resp = call_gemini(tp, model_key=model_key)
-                    st.session_state.messages.append({"role": "assistant", "content": f"📋 **Test Paper — {test_chap}**\n\n{resp}"})
-                    save_data_to_file()
-                    st.markdown(resp)
-
-                    st.download_button(
-                        "📥 Download Test Paper",
-                        data=resp,
-                        file_name=f"Test_{sel_sub}_{test_chap}_{test_marks}m.txt",
-                        mime="text/plain",
-                        use_container_width=True,
-                    )
-                    st.success("✅ Test paper ready!")
-            else:
-                st.warning("⚠️ Enter chapter name first!")
-
-    # ═══════ TAB 3 — QUICK SUMMARY ═══════
-    with tab_summary:
-        st.markdown(f"### 🧠 Quick Summary — {SUBJECT_ICONS[sel_sub]} {chapter}")
-
-        sum_style = st.selectbox("Summary Style", [
-            "📊 Bullet Points",
-            "🧠 Mind Map (text)",
-            "📝 Detailed Notes",
-            "🎯 Exam Crash Course (1-page)",
-            "❓ FAQ Style",
-            "🏷️ Keyword Flashcards",
-        ])
-
-        if st.button("🧠 Generate Summary", use_container_width=True, type="primary"):
-            with st.spinner("👨‍🏫 Jayesh Sir is creating your summary…"):
-                sp = (
-                    f"{get_persona(sel_sub)}\n\n"
-                    f"Create a comprehensive summary:\n"
-                    f"📚 Subject: {sel_sub}\n"
-                    f"📖 Chapter: {chapter}\n"
-                    f"📋 Style: {sum_style}\n\n"
-                    f"Make it:\n"
-                    f"• Easy to remember & exam-focused\n"
-                    f"• Include mnemonics / memory tricks\n"
-                    f"• Bold **keywords**\n"
-                    f"• SSC Board exam tips\n"
-                )
-                resp = call_gemini(sp, model_key=model_key)
-                st.session_state.messages.append({"role": "assistant", "content": f"🧠 **Summary — {chapter}**\n\n{resp}"})
-                save_data_to_file()
-                st.markdown(resp)
-
-                st.download_button(
-                    "📥 Download Summary",
-                    data=resp,
-                    file_name=f"Summary_{sel_sub}_{chapter}.txt",
-                    mime="text/plain",
-                    use_container_width=True,
-                )
-
-    # ═══════ TAB 4 — DOUBT SOLVER (IMAGE) ═══════
-    with tab_doubt:
-        st.markdown("### 📸 Doubt Solver — Upload Image")
-        img_file = st.file_uploader("Upload a photo of your question / diagram", type=["jpg","jpeg","png"], key="doubt_img")
-        doubt_txt = st.text_input("Any extra context? (optional)", placeholder="e.g. 'Explain step 3' or 'Why is this answer X?'")
-
-        if st.button("🔍 Solve Doubt", use_container_width=True, type="primary"):
-            if img_file:
-                with st.spinner("👨‍🏫 Jayesh Sir is reading your image…"):
-                    image = Image.open(img_file)
-                    dp = (
-                        f"{get_persona(sel_sub)}\n\n"
-                        f"The student has uploaded an image of a question/diagram.\n"
-                        f"Subject: {sel_sub} | Chapter: {chapter}\n"
-                        f"Extra context: {doubt_txt if doubt_txt else 'None'}\n\n"
-                        f"Look at the image carefully and:\n"
-                        f"1. Identify the question/topic\n"
-                        f"2. Explain step-by-step\n"
-                        f"3. Give exam tips related to this topic\n"
-                    )
-                    resp = call_gemini(dp, image=image, model_key=model_key)
-                    st.session_state.messages.append({"role": "assistant", "content": f"📸 **Doubt Solved!**\n\n{resp}"})
-                    save_data_to_file()
-                    st.markdown(resp)
-            else:
-                st.warning("⚠️ Please upload an image first!")
-
-# ────────────────── RIGHT PANEL ──────────────────
-with col_right:
+    st.markdown("---")
 
     # ── Actions ──
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="sec-head">🛠️ Actions</div>', unsafe_allow_html=True)
+    st.markdown('<p class="sidebar-header">🛠️ ACTIONS</p>', unsafe_allow_html=True)
 
     if st.button("🗑️ Clear Chat", use_container_width=True):
         st.session_state.messages = []
-        save_data_to_file()
+        save_data()
         st.rerun()
 
-    chat_exp = export_chat_text()
+    chat_exp = export_chat()
     if chat_exp:
         st.download_button(
             "📥 Export Chat",
@@ -872,38 +701,233 @@ with col_right:
             use_container_width=True,
         )
 
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("<div style='height:.6rem'></div>", unsafe_allow_html=True)
-
-    # ── Daily Tip ──
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="sec-head">💡 Tip of the Day</div>', unsafe_allow_html=True)
-    st.info(f"Jayesh Sir says:\n\n{random.choice(TIPS)}")
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("<div style='height:.6rem'></div>", unsafe_allow_html=True)
-
-    # ── Subject Progress ──
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="sec-head">📊 Usage</div>', unsafe_allow_html=True)
-    for sub, cnt in st.session_state.subject_hist.items():
-        if cnt > 0:
-            pct = min(cnt / 10, 1.0)
-            st.progress(pct, text=f"{SUBJECT_ICONS[sub]} {sub} ({cnt})")
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("<div style='height:.6rem'></div>", unsafe_allow_html=True)
-
-    # ── About ──
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="sec-head">ℹ️ About</div>', unsafe_allow_html=True)
-    st.caption(
-        "🎓 Jayesh Tutorial\n"
-        "📱 SSC 9th Board Prep\n"
-        "🤖 Powered by Gemini AI\n"
-        f"🕐 Session: {st.session_state.session_ts}"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("---")
+    st.info(f"💡 **Tip:** {random.choice(TIPS)}")
 
 # ══════════════════════════════════════════════════════════════
-# 10. AUTO-SAVE ON PAGE RERUN (safety net)
+# 9. MAIN AREA — HEADER + TABS
 # ══════════════════════════════════════════════════════════════
-save_data_to_file()
+st.markdown('<h1 class="main-title">🎓 Jayesh Tutorial — SSC Genius AI</h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Your personal AI tutor for 9th SSC Board | Powered by Gemini ✨</p>', unsafe_allow_html=True)
+
+# Stats row (HTML for clean look)
+st.markdown(f"""
+<div class="stat-row">
+    <div class="stat-card">
+        <div class="stat-num">{st.session_state.total_q}</div>
+        <div class="stat-lbl">Questions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num">{st.session_state.total_tests}</div>
+        <div class="stat-lbl">Tests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num">{len(st.session_state.messages)}</div>
+        <div class="stat-lbl">Messages</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num">{SUBJECT_ICONS.get(fav if any(st.session_state.subject_hist.values()) else None, '📚')}</div>
+        <div class="stat-lbl">Top Subject</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-num">9th</div>
+        <div class="stat-lbl">SSC Board</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ══════════════════════════════════════════════════════════════
+# 10. TABS
+# ══════════════════════════════════════════════════════════════
+tab_chat, tab_test, tab_summary, tab_doubt = st.tabs([
+    "💬 Chat",
+    "📝 Test Generator",
+    "🧠 Quick Summary",
+    "📸 Doubt Solver",
+])
+
+# ═══════ TAB 1 — CHAT ═══════
+with tab_chat:
+    st.markdown(f"### 💬 Chat with Jayesh Sir — {SUBJECT_ICONS[sel_sub]} {sel_sub}")
+
+    # Quick prompts
+    st.markdown("**⚡ Quick Prompts**")
+    qp = QUICK_PROMPTS[sel_sub]
+    q1, q2, q3, q4 = st.columns(4)
+    cols_qp = [q1, q2, q3, q4]
+    for i, q in enumerate(qp):
+        with cols_qp[i]:
+            if st.button(q, key=f"qp{i}", use_container_width=True):
+                st.session_state["prefill"] = q
+
+    # Chat history
+    for m in st.session_state.messages:
+        with st.chat_message(m["role"]):
+            st.markdown(m["content"])
+
+    # Chat input
+    prefill = st.session_state.pop("prefill", "")
+    if prompt := st.chat_input("Ask Jayesh Sir anything… 💭"):
+        st.session_state.subject_hist[sel_sub] += 1
+        st.session_state.total_q += 1
+
+        full = f"{prefill}\n{prompt}" if prefill else prompt
+
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        save_data()
+
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        with st.chat_message("assistant"):
+            with st.spinner("👨‍🏫 Jayesh Sir is thinking…"):
+                ai_prompt = (
+                    f"{get_persona(sel_sub)}\n"
+                    f"Subject: {sel_sub} | Chapter: {chapter} | Difficulty: {difficulty}\n"
+                    f"Student Query: {full}"
+                )
+                resp = call_gemini(ai_prompt)
+                st.markdown(resp)
+
+        st.session_state.messages.append({"role": "assistant", "content": resp})
+        save_data()
+
+# ═══════ TAB 2 — TEST GENERATOR ═══════
+with tab_test:
+    st.markdown(f"### 📝 Test Paper Generator — {SUBJECT_ICONS[sel_sub]} {sel_sub}")
+
+    tc1, tc2, tc3 = st.columns(3)
+    with tc1:
+        test_chap  = st.text_input("📖 Chapter Name", value=chapter)
+    with tc2:
+        test_marks = st.number_input("📊 Total Marks", 5, 100, 20, step=5)
+    with tc3:
+        test_type = st.selectbox("Question Type", [
+            "All Mixed",
+            "Short Answer (2-3 marks)",
+            "Long Answer (5 marks)",
+            "Fill in the Blanks (1 mark)",
+            "Match the Following",
+            "True or False",
+            "Multiple Choice (MCQ)",
+        ])
+
+    ac1, ac2 = st.columns(2)
+    with ac1:
+        ans_key = st.checkbox("✅ Include Answer Key", value=True)
+    with ac2:
+        test_diff = st.select_slider("🎯 Difficulty", options=["Easy","Medium","Hard"], value="Medium")
+
+    if st.button("🚀 Generate Test Paper", use_container_width=True, type="primary"):
+        if test_chap:
+            st.session_state.total_tests += 1
+            save_data()
+            with st.spinner("👨‍🏫 Jayesh Sir is preparing your test…"):
+                ans_note = "Include a DETAILED ANSWER KEY at the end." if ans_key else "Do NOT include answers."
+                tp = (
+                    f"{get_persona(sel_sub)}\n\n"
+                    f"Generate a COMPLETE, NEW, UNIQUE test paper:\n"
+                    f"📚 Subject: {sel_sub}\n"
+                    f"📖 Chapter: {test_chap}\n"
+                    f"📊 Total Marks: {test_marks}\n"
+                    f"📝 Question Type: {test_type}\n"
+                    f"🎯 Difficulty: {test_diff}\n"
+                    f"✅ {ans_note}\n\n"
+                    f"Format professionally:\n"
+                    f"• Header: Subject / Chapter / Total Marks / Time\n"
+                    f"• Clear numbering & marks per question\n"
+                    f"• Proper spacing\n"
+                    f"• Follow SSC Board pattern strictly\n"
+                )
+                resp = call_gemini(tp)
+                st.session_state.messages.append({"role": "assistant", "content": f"📋 **Test Paper — {test_chap}**\n\n{resp}"})
+                save_data()
+                st.markdown(resp)
+
+                st.download_button(
+                    "📥 Download Test Paper",
+                    data=resp,
+                    file_name=f"Test_{sel_sub}_{test_chap}_{test_marks}m.txt",
+                    mime="text/plain",
+                    use_container_width=True,
+                )
+                st.success("✅ Test paper ready!")
+        else:
+            st.warning("⚠️ Enter chapter name first!")
+
+# ═══════ TAB 3 — QUICK SUMMARY ═══════
+with tab_summary:
+    st.markdown(f"### 🧠 Quick Summary — {SUBJECT_ICONS[sel_sub]} {chapter}")
+
+    sum_style = st.selectbox("Summary Style", [
+        "📊 Bullet Points",
+        "🧠 Mind Map (text)",
+        "📝 Detailed Notes",
+        "🎯 Exam Crash Course (1-page)",
+        "❓ FAQ Style",
+        "🏷️ Keyword Flashcards",
+    ])
+
+    if st.button("🧠 Generate Summary", use_container_width=True, type="primary"):
+        with st.spinner("👨‍🏫 Jayesh Sir is creating your summary…"):
+            sp = (
+                f"{get_persona(sel_sub)}\n\n"
+                f"Create a comprehensive summary:\n"
+                f"📚 Subject: {sel_sub}\n"
+                f"📖 Chapter: {chapter}\n"
+                f"📋 Style: {sum_style}\n\n"
+                f"Make it:\n"
+                f"• Easy to remember & exam-focused\n"
+                f"• Include mnemonics / memory tricks\n"
+                f"• Bold **keywords**\n"
+                f"• SSC Board exam tips\n"
+            )
+            resp = call_gemini(sp)
+            st.session_state.messages.append({"role": "assistant", "content": f"🧠 **Summary — {chapter}**\n\n{resp}"})
+            save_data()
+            st.markdown(resp)
+
+            st.download_button(
+                "📥 Download Summary",
+                data=resp,
+                file_name=f"Summary_{sel_sub}_{chapter}.txt",
+                mime="text/plain",
+                use_container_width=True,
+            )
+
+# ═══════ TAB 4 — DOUBT SOLVER ═══════
+with tab_doubt:
+    st.markdown(f"### 📸 Doubt Solver — {SUBJECT_ICONS[sel_sub]} {sel_sub}")
+
+    dc1, dc2 = st.columns(2)
+    with dc1:
+        img_file = st.file_uploader("📸 Upload Question Image", type=["jpg","jpeg","png"], key="doubt_img")
+    with dc2:
+        doubt_txt = st.text_input("Extra context?", placeholder="e.g. 'Explain step 3'")
+
+    if st.button("🔍 Solve Doubt", use_container_width=True, type="primary"):
+        if img_file:
+            with st.spinner("👨‍🏫 Jayesh Sir is reading your image…"):
+                image = Image.open(img_file)
+                dp = (
+                    f"{get_persona(sel_sub)}\n\n"
+                    f"The student uploaded an image of a question/diagram.\n"
+                    f"Subject: {sel_sub} | Chapter: {chapter}\n"
+                    f"Extra context: {doubt_txt if doubt_txt else 'None'}\n\n"
+                    f"Look at the image carefully and:\n"
+                    f"1. Identify the question/topic\n"
+                    f"2. Explain step-by-step\n"
+                    f"3. Give exam tips related to this topic\n"
+                )
+                resp = call_gemini(dp, image=image)
+                st.session_state.messages.append({"role": "assistant", "content": f"📸 **Doubt Solved!**\n\n{resp}"})
+                save_data()
+                st.markdown(resp)
+        else:
+            st.warning("⚠️ Please upload an image first!")
+
+# ══════════════════════════════════════════════════════════════
+# 11. AUTO-SAVE
+# ══════════════════════════════════════════════════════════════
+save_data()
