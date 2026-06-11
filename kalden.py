@@ -2,17 +2,23 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 
-# 1. Page Config - Sidebar ko expanded rakha hai taaki mobile pe dikhe
+# 1. Page Config - Sidebar ko expanded rakhne ka command
 st.set_page_config(page_title="SSC Genius AI", page_icon="🎓", layout="centered", initial_sidebar_state="expanded")
 
-# 2. Hide Streamlit Branding (Watermark) & Force Sidebar
+# 2. Hide Streamlit Branding & Force Sidebar visibility
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
-            [data-testid="stSidebar"] {
+            /* Force Sidebar to be visible and take space */
+            section[data-testid="stSidebar"] {
                 display: flex !important;
+                width: 300px !important;
+            }
+            /* Hide the arrow button that collapses the sidebar */
+            button[kind="header"] {
+                display: none !important;
             }
             </style>
             """
@@ -23,9 +29,9 @@ st.title("🎓 Jayesh Tutorial")
 st.sidebar.header("Kalden")
 subject = st.sidebar.selectbox("Subject", ["History", "Geography", "Science", "Maths", "English"])
 
-# API Setup - Using stable model 3.5-flash
+# API Setup
 genai.configure(api_key=st.secrets["API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-3.5-flash')
 
 # Persona
 persona = "You are Jayesh Sir, a 9th SSC tutor. Be encouraging, clear, and always start your response with 'Jayesh Sir:- '."
