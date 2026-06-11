@@ -2,83 +2,95 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 
-# 1. Page Config - Sidebar ko expanded rakhne ka command
-st.set_page_config(page_title="SSC Genius AI", page_icon="🎓", layout="centered", initial_sidebar_state="expanded")
+# 1. Page Config - Wide Layout taaki columns achhe dikhein
+st.set_page_config(page_title="SSC Genius AI", page_icon="🎓", layout="wide")
 
-# 2. Hide Streamlit Branding & Force Sidebar visibility
+# 2. Branding-Free CSS (Sidebar ko permanent hide kar diya)
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
-            /* Force Sidebar to be visible and take space */
-            section[data-testid="stSidebar"] {
-                display: flex !important;
-                width: 300px !important;
-            }
-            /* Hide the arrow button that collapses the sidebar */
-            button[kind="header"] {
-                display: none !important;
+            /* Hide the actual sidebar entirely */
+            [data-testid="stSidebar"] {display: none;}
+            /* Adjust padding for mobile */
+            .block-container {
+                padding-top: 2rem;
+                padding-bottom: 2rem;
             }
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# 3. Layout & Setup
-st.title("🎓 Jayesh Tutorial")
-st.sidebar.header("Kalden")
-subject = st.sidebar.selectbox("Subject", ["History", "Geography", "Science", "Maths", "English"])
-
-# API Setup
+# 3. API Setup
 genai.configure(api_key=st.secrets["API_KEY"])
 model = genai.GenerativeModel('gemini-3.5-flash')
 
 # Persona
 persona = "You are Jayesh Sir, a 9th SSC tutor. Be encouraging, clear, and always start your response with 'Jayesh Sir:- '."
 
-# --- Sidebar: Test Paper Generator ---
-st.sidebar.markdown("---")
-st.sidebar.subheader("Create Test Paper")
-chapter_test = st.sidebar.text_input("Enter Chapter for Test")
-marks_test = st.sidebar.number_input("Total Marks", min_value=5, max_value=100, value=20)
-q_type = st.sidebar.radio("Question Type", ["Short Answer", "Long Answer", "Fill in the Blanks", "All Mixed"])
+# --- MAIN INTERFACE (Sidebar content moved to main area) ---
+st.title("🎓 Jayesh Tutorial - SSC Genius AI")
 
-if st.sidebar.button("Generate Test Paper"):
-    if chapter_test:
-        with st.spinner("Jayesh Sir is preparing your test..."):
-            test_prompt = f"{persona}\nGenerate a NEW and UNIQUE test paper for {subject}, Chapter: {chapter_test}. Total Marks: {marks_test}. Question Type: {q_type}. Do not repeat questions."
-            response = model.generate_content(test_prompt)
-            st.session_state.messages.append({"role": "assistant", "content": f"Jayesh Sir:- Here is your test paper:\n\n{response.text}"})
-            st.rerun() 
-    else:
-        st.sidebar.warning("Please enter a chapter name!")
+# Creating two columns: Left for Menu, Right for Chat
+col_menu, col_chat = st.columns([1, 2.2])
 
-# --- Chat Section ---
-st.subheader("Chat with Jayesh Sir")
-uploaded_file = st.file_uploader("📸 Scan/Upload Question", type=["jpg", "jpeg", "png"])
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display history
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
-
-# Chat Input
-if prompt := st.chat_input("Ask a doubt or paste an answer for grading..."):
-    st.chat_message("user").markdown(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
+with col_menu:
+    st.markdown("### 📋 Menu & Controls")
+    subject = st.selectbox("Select Subject", ["History", "Geography", "Science", "Maths", "English"])
     
-    with st.spinner("Jayesh Sir is thinking..."):
-        if uploaded_file:
-            image = Image.open(uploaded_file)
-            st.chat_message("user").image(image, caption="Uploaded Image")
-            response = model.generate_content([f"{persona}\nSolve this:", image, prompt])
+    st.markdown("---")
+    st.subheader("📝 Test Generator")
+    chapter_test = st.text_input("Enter Chapter Name")
+    marks_test = st.number_input("Total Marks", min_value=5, max_value=100, value=20)
+    q_type = st.radio("Question Type", ["Short Answer", "Long Answer", "Fill in the Blanks", "All Mixed"])
+
+    if st.button("🚀 Generate Test Paper"):
+        if chapter_test:
+            with st.spinner("Jayesh Sir is preparing your test..."):
+                test_prompt = f"{persona}\nGenerate a NEW and UNIQUE test paper for {subject}, Chapter: {chapter_test}. Total Marks: {marks_test}. Question Type: {q_type}."
+                response = model.generate_content(test_prompt)
+                if "messages" not in st.session_state:
+                    st.session_state.messages = []
+                st.session_state.messages.append({"role": "assistant", "content": f"Jayesh Sir:- Here is your test paper for {chapter_test}:\n\n{response.text}"})
+                st.success("Test Generated! Check the chat.")
         else:
-            response = model.generate_content(f"{persona}\nQuery: {prompt}")
-            
-        final_response = response.text
+            st.warning("Please enter chapter name!")
+
+with col_chat:
+    st.markdown("### 💬 Chat with Jayesh Sir")
     
-    st.chat_message("assistant").markdown(final_response)
-    st.session_state.messages.append({"role": "assistant", "content": final_response})
+    # Image Upload within Chat Area
+    uploaded_file = st.file_uploader("📸 Scan/Upload Question", type=["jpg", "jpeg", "png"])
+
+    # Message Container
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display History
+    chat_placeholder = st.container()
+    with chat_placeholder:
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+
+    # Chat Input
+    if prompt := st.chat_input("Ask a doubt..."):
+        # User message
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        
+        # Jayesh Sir Response
+        with st.spinner("Jayesh Sir is thinking..."):
+            if uploaded_file:
+                image = Image.open(uploaded_file)
+                response = model.generate_content([f"{persona}\nSolve this:", image, prompt])
+            else:
+                response = model.generate_content(f"{persona}\nQuery: {prompt}")
+            
+            final_response = response.text
+            
+        with st.chat_message("assistant"):
+            st.markdown(final_response)
+        st.session_state.messages.append({"role": "assistant", "content": final_response})
